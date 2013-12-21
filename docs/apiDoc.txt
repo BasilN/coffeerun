@@ -1,0 +1,20 @@
+CoffeeRun API
+Database Design:
+Tables
+1. coffeeShop
+ - coffeeshopId (pk)
+ - name
+ - Rating
+ - ContactID
+ - imagesID
+
+2. Contact
+ - contactId (PK)
+ - Address
+ - phoneNumber
+ - email
+ 
+3.Images
+ - ImageId(FK, PK)
+ - logoURL
+ - picturesURL

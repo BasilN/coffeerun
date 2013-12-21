@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/oauth.js"></script>
+    <script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>
+
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+    <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.6.0.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
+    <script src="../app/bower_components/angular-ui/build/angular-ui.js"></script>
+
+    <script type="text/javascript" src="../app/bower_components/angular-ui-utils/modules/event/event.js "></script>
+    <script type="text/javascript" src="../app/bower_components/angular-ui-map/src/map.js"></script>
+    <script type="text/javascript" src="../app/bower_components/gmaps/gmaps.js"></script>
+    <script type="text/javascript" src="../app/bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
+
+
+    <script type="text/javascript" src="../js/coffeeShop.js"></script>
+
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.css">
+    <!-- Custom styles for this template -->
+    <link href="../bootstrap/css/navbar-fixed-top.css" rel="stylesheet">
+    <link href="../css/starRating.css">
+
+</head>
+<body>
+    <div class="container">
+        <!--navbar-->
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <div class="navbar-header">
+
+                    </div>
+                </div>
+                <div class="nav-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class=""><a href="#">Home</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div ng-controller="CoffeeShopCtrl">
+            <h2>Coffee Shops We've Visited</h2>
+
+        </div>
+
+        <div class="well" style="width: 100%" ng-controller="CoffeeShopCtrl" >
+            <div style="width: 600px;float: left" class="pre-like-border" ng-repeat="(shopIndex, coffeeShop) in coffeeShops"  ng-controller="RatingDemoCtrl">
+
+                <div  style="float: left;padding-right: 10px;"><img class="pre-like-border-no-padding" style="height: 60px;width: 60px; display: block" src={{coffeeShop.logoUrl}} alt="header" /></div>
+                <div ng-controller="CarouselModalCtrl" style="float: right; padding-top: 10px"><button class="btn btn-success" ng-click="open($index)"><i class="icon-camera"></i></button></div>
+
+                <div>
+                {{ $index+1 }}. {{ coffeeShop.name }} <br>
+                {{ coffeeShop.address }}  <br>
+                    </div>
+
+                <rating  value="rate" max="max" readonly="isReadonly" on-hover="hoveringOver(value)" on-leave="overStar = null"></rating>
+                <span class="badge" ng-class="{'badge-warning': percent<30, 'badge-info': percent>=30 && percent<70, 'badge-success': percent>=70}" ng-show="overStar && !isReadonly">{{percent}}%</span>
+                <!-- picture carousel Modal -->
+                <div ng-controller="CarouselModalCtrl" >
+                    <script type="text/ng-template" id="carouselContent.html">
+                        <div class="modal-header">
+                            <h3>{{$scope.currentShop}}</h3>
+                        </div>
+                        <div ng-controller="CarouselCtrl" class="modal-body">
+                            <carousel interval="myInterval">
+                                <slide ng-repeat="slide in slides" active="slide.active">
+                                    <img ng-src="{{slide.image}}" style="margin:auto;">
+
+                                    <!--<img ng-src="{{coffeeShop.picturesUrl}}"> -->
+                                    <div class="carousel-caption">
+                                        <h4>Slide {{$index}}</h4>
+                                        <p>{{slide.text}}</p>
+                                    </div>
+                                </slide>
+                            </carousel>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                        </div>
+                    </script>
+                </div>
+
+            </div>
+            <div style="margin-left: 620px" ng-controller="MapCtrl">
+                <div id="map_canvas" ui-map="myMap"
+                     style="height:300px;width:300px;border:2px solid #777777;margin:3px; border:1px solid"
+                     ui-options="mapOptions"
+                     ui-event="{'map-idle' : 'onMapIdle()'}"
+                        >
+                </div>
+
+                <div ng-repeat="marker in myMarkers" ui-map-marker="myMarkers[$index]"
+                     ui-event="{'map-click': 'markerClicked(marker)'}">
+                </div>
+
+            </div>
+            <!--
+            <div style="margin-left: 620px" ng-controller="mapsController">
+                <google-map
+                    class='google-map-container'
+                    center="center"
+                    draggable="true"
+                    zoom="zoom"
+                    markers="markers"
+                    mark-click="false"></google-map>
+            </div>     -->
+
+        </div>
+
+
+        <div ng-controller="ModalDemoCtrl">
+            <script type="text/ng-template" id="myModalContent.html">
+                <div class="modal-header">
+                    <h3>I'm a modal!</h3>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        <li ng-repeat="item in items">
+                        <a ng-click="selected.item = item">{{ item.name }}</a>
+                    </li>
+                    </ul>
+                    <form ng-controller="CoffeeShopCtrl" class="form-horizontal">
+                        <input type="text" ng-Model="coffeeShopName" ng-model-instant>
+                        <input type="text" ng-Model="coffeeShopAddress" ng-model-instant>
+                        <button class="btn" ng-click="addCoffeeShop()"><i class="icon-plus"></i>Add</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                </div>
+            </script>
+
+            <button class="btn" ng-click="open()">Open me!</button>
+        </div>
+
+
+
+
+    </div>
+
+</body>
+</html>
